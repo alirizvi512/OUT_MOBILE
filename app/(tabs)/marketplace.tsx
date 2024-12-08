@@ -1,6 +1,6 @@
 import { Text, View } from "react-native";
 
-export default function ExploreScreen() {
+export default function MarketplaceScreen() {
     return (
         <View
             style={{
@@ -9,7 +9,7 @@ export default function ExploreScreen() {
                 alignItems: "center",
             }}
         >
-            <Text>Edit tabs/explore.tsx to edit this screen.</Text>
+            <Text>Edit tabs/marketplace.tsx to edit this screen.</Text>
         </View>
     );
 }
