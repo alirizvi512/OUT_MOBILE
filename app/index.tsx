@@ -23,9 +23,10 @@ export default function LoginScreen() {
 
     const login = async () => {
         try {
-            const { codeVerifier } = await requestMagicLink(email);
-            await saveSecureData("codeVerifier", codeVerifier);
-            await saveSecureData("email", email);
+            // const { codeVerifier } = await requestMagicLink(email);
+            await requestMagicLink(email);
+            // await saveSecureData("codeVerifier", codeVerifier);
+            // await saveSecureData("email", email);
             router.push("/activation-code");
         } catch (error) {
             console.error("Error in Login Flow:", error);

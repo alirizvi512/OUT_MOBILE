@@ -17,6 +17,7 @@ import Card from "@/components/feed/Card";
 import { fetchFeedStart, refreshFeedStart } from "@/redux/slice/feedSlice";
 import { RootState } from "@/redux/store";
 import { ITake } from "@/types/Itake";
+import { deleteSecureData } from "@/store";
 
 export default function ProfileScreen() {
     const dispatch = useDispatch();
@@ -79,8 +80,10 @@ export default function ProfileScreen() {
                             />
                             <TouchableOpacity
                                 style={styles.backButton}
-                                onPress={() => {
-                                    router.back();
+                                onPress={async () => {
+                                    await deleteSecureData("access_token");
+                                    await deleteSecureData("refresh_token");
+                                    router.push("/");
                                 }}
                             >
                                 <Ionicons name="arrow-back" size={24} color="white" />

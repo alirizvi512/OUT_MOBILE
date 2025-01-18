@@ -1,6 +1,6 @@
 import { getMyProfile } from '@/services/getMyProfile';
 import { getSecureData, saveSecureData } from '@/store';
-import { userNavigator, verifyOTP } from '@/utils/authFunctions';
+import { authenticate, getAuthTokenFromCodeVerification, userNavigator, verifyOTP } from '@/utils/authFunctions';
 import { router } from 'expo-router';
 import React, { useState } from 'react';
 import {
@@ -19,13 +19,15 @@ export default function ActivationCodeScreen() {
 
     const proceed = async () => {
         try {
-            const codeVerifier = await getSecureData("codeVerifier") || "";
+            // const codeVerifier = await getSecureData("codeVerifier") || "";
             const email = await getSecureData("email") || "";
-            const tokenResult = await verifyOTP(email, code, codeVerifier);
+            const tokenResult = await verifyOTP(email, code);
+            console.log(tokenResult);
             await saveSecureData("access_token", tokenResult.access_token);
             await saveSecureData("refresh_token", tokenResult.refresh_token);
             const data = await getMyProfile();
-            await userNavigator(data);
+            console.log("Data", data);
+            // await userNavigator(data);
         } catch (error) {
             console.error("Error in Login Flow:", error);
         }

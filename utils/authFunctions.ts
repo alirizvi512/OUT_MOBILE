@@ -1,4 +1,4 @@
-import { AUTH0_AUDIENCE, AUTH0_CLIENT_ID, AUTH0_DOMAIN, REDIRECT_URI } from '@/constants/Auth';
+import { AUTH0_AUDIENCE, AUTH0_CLIENT_ID, AUTH0_CLIENT_SECRET, AUTH0_DOMAIN, REDIRECT_URI } from '@/constants/Auth';
 import { IProfile } from '@/types/IProfile';
 import * as Crypto from 'expo-crypto';
 import * as Linking from 'expo-linking';
@@ -81,8 +81,9 @@ export const getNewAccessTokenFromRefreshToken = async (refreshToken: string) =>
 }
 
 export const requestMagicLink = async (email: string) => {
-    const codeVerifier = generateCodeVerifier();
-    const codeChallenge = await generateCodeChallenge(codeVerifier);
+    // const codeVerifier = generateCodeVerifier();
+    // const codeChallenge = await generateCodeChallenge(codeVerifier);
+    // console.log("Code Challenge", codeChallenge, "codeVerifier", codeVerifier)
     const response = await fetch(`https://${AUTH0_DOMAIN}/passwordless/start`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -91,19 +92,22 @@ export const requestMagicLink = async (email: string) => {
             connection: 'email',
             email,
             send: 'code',
-            authParams: {
-                code_challenge: codeChallenge,
-                code_challenge_method: 'S256',
-                scope: "openid profile email offline_access follows.read",
-                response_type: 'code',
-                redirect_uri: REDIRECT_URI,
-            },
+            // authParams: {
+            //     code_challenge: codeChallenge,
+            //     code_challenge_method: 'S256',
+            //     scope: "openid profile email offline_access follows.read",
+            //     response_type: 'code',
+            //     redirect_uri: REDIRECT_URI,
+            // },
         }),
     });
-    return { response: response.json(), codeVerifier };
+    console.log({ response: response.json() });
+    return { response: response.json() };
 };
 
-export const verifyOTP = async (email: string, otpCode: string, codeVerifier: string) => {
+export const verifyOTP = async (email: string, otpCode: string) => {
+    console.error("Email", email);
+    console.error("otpCode", otpCode);
     const response = await fetch(`https://${AUTH0_DOMAIN}/oauth/token`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -114,7 +118,7 @@ export const verifyOTP = async (email: string, otpCode: string, codeVerifier: st
             username: email,
             otp: otpCode,
             scope: "openid profile email offline_access follows.read",
-            code_verifier: codeVerifier,
+            // code_verifier: codeVerifier,
             redirect_uri: REDIRECT_URI,
         }),
     });
@@ -128,6 +132,61 @@ export const verifyOTP = async (email: string, otpCode: string, codeVerifier: st
         throw new Error(tokens.error_description || 'OTP verification failed');
     }
 };
+
+export const authenticate = async (email: string, otpCode: string) => {
+    console.log("REDIRECT_URI", REDIRECT_URI)
+    const response = await fetch(`https://${AUTH0_DOMAIN}/co/authenticate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', origin: REDIRECT_URI, referer: REDIRECT_URI },
+        body: JSON.stringify({
+            client_id: AUTH0_CLIENT_ID,
+            credential_type: 'http://auth0.com/oauth/grant-type/passwordless/otp',
+            realm: 'email',
+            username: email,
+            otp: otpCode
+        }),
+    });
+
+    const tokens = await response.json();
+    console.log("tokens", tokens)
+    if (response.ok) {
+        return tokens;
+    } else {
+        // Handle errors
+        console.log(tokens);
+        console.error('Error:', tokens);
+        throw new Error(tokens.error_description || 'OTP verification failed');
+    }
+};
+
+export const getAuthTokenFromCodeVerification = async (co_id: string, co_verifier: string, login_ticket: string, username: string, otpCode: string) => {
+    console.log(otpCode, username);
+    const response = await fetch(`https://${AUTH0_DOMAIN}/oauth/token`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            grant_type: 'http://auth0.com/oauth/grant-type/passwordless/otp',
+            client_id: AUTH0_CLIENT_ID,
+            client_secret: AUTH0_CLIENT_SECRET,
+            co_id,
+            co_verifier,
+            login_ticket,
+            redirect_uri: REDIRECT_URI,
+            username,
+            otp: otpCode,
+            realm: 'email',
+        }),
+    });
+
+    const tokens = await response.json();
+    if (response.ok) {
+        return tokens;
+    } else {
+        // Handle errors
+        console.error('Error:', tokens);
+        throw new Error(tokens.error_description || 'OTP verification failed');
+    }
+}
 
 export const userNavigator = async (user: IProfile) => {
     if (user.userState === 2) {

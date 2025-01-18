@@ -3,9 +3,9 @@ import { StyleSheet, SafeAreaView, StatusBar, FlatList, ActivityIndicator, Refre
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchFeedStart, refreshFeedStart } from '@/redux/slice/feedSlice';
 import { RootState } from '@/redux/store';
-import Header from '@/components/feed/Header';
 import Card from '@/components/feed/Card';
 import { ITake } from '@/types/Itake';
+import Header from '@/components/common/Header';
 
 export default function IndexScreen() {
   const dispatch = useDispatch();
@@ -36,7 +36,7 @@ export default function IndexScreen() {
     <>
       <StatusBar barStyle="light-content" backgroundColor="#171717" />
       <SafeAreaView style={styles.safeArea}>
-        <Header />
+        <Header from='feed' />
         <FlatList
           data={data}
           keyExtractor={(item) => item.id.toString()}

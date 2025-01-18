@@ -43,7 +43,8 @@ const styles = StyleSheet.create({
     },
     authButton: {
         backgroundColor: '#4A4A4A',
-        width: 140.5,
+        minWidth: 140.5,
+        width: '45%',
         height: 62,
         borderRadius: 30,
         justifyContent: 'center',

@@ -46,3 +46,13 @@ export const getTimeAgo = (time: number) => {
         ? '1 year ago'
         : `${differenceInYears} years ago`;
 };
+
+export const truncateAddress = (address: string) => {
+    if (!address || address.length < 10) {
+        return address;
+    }
+    const prefix = address.slice(0, 4);
+    const suffix = address.slice(-4);
+
+    return `${prefix}•••${suffix}`;
+}
