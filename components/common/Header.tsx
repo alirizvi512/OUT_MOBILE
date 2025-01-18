@@ -101,15 +101,15 @@ const styles = StyleSheet.create({
         borderRadius: 16, // Circular profile image
     },
     addWalletBtn: {
-        display: 'flex',
-        width: 48,
-        height: 48,
+        width: 40,
+        height: 40,
+        backgroundColor: '#fff',
+        borderRadius: 20,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#fff',
-        borderRadius: '50%',
     },
     addWalletBtnText: {
-        fontSize: 36
-    }
+        fontSize: 36,
+        lineHeight: 40,
+    },
 });

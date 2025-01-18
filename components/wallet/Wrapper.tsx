@@ -11,6 +11,10 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { truncateAddress } from '@/utils/generalFunctions';
 import useSolanaTransaction from '@/callbacks/useSolanaTransaction';
 import * as Clipboard from 'expo-clipboard';
+import { router } from 'expo-router';
+import SinglePortfolio from './SinglePotfolio';
+import EmptyWalletContainer from './EmptyWalletContainer';
+import SingleHistory from './SingleHistory';
 
 export default function WalletWrapper() {
 
@@ -23,7 +27,7 @@ export default function WalletWrapper() {
         <ScrollView style={styles.container}>
 
             {/* --- Wallets Section --- */}
-            <Text style={styles.sectionTitle}>Wallets</Text>
+            <Text style={{ ...styles.sectionTitle, padding: 24 }}>Wallets</Text>
 
             <ScrollView
                 horizontal
@@ -84,7 +88,7 @@ export default function WalletWrapper() {
 
 
             <View style={styles.actionsRow}>
-                <TouchableOpacity style={styles.actionItem}>
+                <TouchableOpacity style={styles.actionItem} onPress={() => { router.push("/wallet/deposit" as any) }}>
                     <LinearGradient
                         colors={['#22C1C3', '#6EF195']}
                         start={{ x: 0, y: 0 }}
@@ -99,7 +103,7 @@ export default function WalletWrapper() {
                     </LinearGradient>
                     <Text style={styles.actionLabel}>Deposit</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.actionItem}>
+                <TouchableOpacity style={styles.actionItem} onPress={() => { router.push("/wallet/withdraw" as any) }}>
                     <LinearGradient
                         colors={['#F40752', '#F65770', '#F9AB8F']}
                         start={{ x: 0, y: 0 }}
@@ -149,26 +153,33 @@ export default function WalletWrapper() {
             <View style={styles.divider} />
 
             {/* --- Portfolio Section --- */}
-            <Text style={styles.sectionTitle}>Portfolio</Text>
-            <View style={styles.emptyContainer}>
-                <Text style={styles.emptyTitle}>Empty</Text>
-                <Text style={styles.emptySubtitle}>
-                    You do not hold any Chips in your portfolio.
-                </Text>
+            <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>Portfolio</Text>
+                <TouchableOpacity>
+                    <Text style={styles.showAll}>
+                        Show all
+                    </Text>
+                </TouchableOpacity>
             </View>
+            <SinglePortfolio />
+            <SinglePortfolio />
+            <SinglePortfolio />
 
             <View style={styles.divider} />
 
-            {/* --- History Section --- */}
-            <Text style={styles.sectionTitle}>History</Text>
-            <View style={styles.emptyContainer}>
-                <Text style={styles.emptyTitle}>No History</Text>
-                <Text style={styles.emptySubtitle}>
-                    You did not make any transaction yet.
-                </Text>
+            <View style={styles.sectionHeader}>
+                <Text style={styles.sectionTitle}>History</Text>
+                <TouchableOpacity>
+                    <Text style={styles.showAll}>
+                        Show all
+                    </Text>
+                </TouchableOpacity>
             </View>
-
-        </ScrollView>
+            <SingleHistory success={true} />
+            <SingleHistory success={false} />
+            <SingleHistory success={true} />
+            {/* <EmptyWalletContainer /> */}
+        </ScrollView >
     );
 }
 
@@ -181,23 +192,16 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 21,
         fontWeight: 'bold',
-        padding: 24,
         lineHeight: 29.4,
     },
-    // The outer scroll container
     walletsContainer: {
-        // You can keep basic style here (like backgroundColor or padding)
         borderRadius: 10,
         padding: 24,
         paddingTop: 0,
     },
-    // Where you set layout on children
     walletsContentContainer: {
         flexDirection: 'row',
         alignItems: 'center',
-        // If your React Native version doesn't support `gap`,
-        // remove it and instead use margin on each card.
-        // gap: 16,
     },
     walletCard: {
         width: 160,
@@ -206,7 +210,6 @@ const styles = StyleSheet.create({
         paddingBottom: 12,
         borderRadius: 8,
         backgroundColor: '#4A4A4A',
-        // Instead of gap, add marginRight to create spacing between cards
         marginRight: 16,
     },
     walletCardHeader: {
@@ -310,28 +313,20 @@ const styles = StyleSheet.create({
         marginTop: 4,
         lineHeight: 20
     },
-    emptyContainer: {
-        paddingVertical: 32,
+    sectionHeader: {
+        display: 'flex',
+        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
+        padding: 24,
     },
-    emptyTitle: {
-        fontSize: 21,
-        marginBottom: 4,
-        color: '#7B7B7B',
-        textAlign: 'center',
-        fontFamily: 'Inter',
-        fontStyle: 'normal',
-        fontWeight: 700,
-        lineHeight: 29.4,
-    },
-    emptySubtitle: {
+    showAll: {
         fontSize: 16,
         color: '#7B7B7B',
         textAlign: 'center',
         fontFamily: 'Inter',
         fontStyle: 'normal',
-        fontWeight: 400,
-        lineHeight: 24,
-    },
+        fontWeight: 700,
+        lineHeight: 22,
+    }
 });

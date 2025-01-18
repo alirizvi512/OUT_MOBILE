@@ -80,10 +80,8 @@ export default function ProfileScreen() {
                             />
                             <TouchableOpacity
                                 style={styles.backButton}
-                                onPress={async () => {
-                                    await deleteSecureData("access_token");
-                                    await deleteSecureData("refresh_token");
-                                    router.push("/");
+                                onPress={() => {
+                                    router.back();
                                 }}
                             >
                                 <Ionicons name="arrow-back" size={24} color="white" />
