@@ -9,13 +9,11 @@ import {
 } from "@solana/web3.js";
 import {
     useEmbeddedSolanaWallet,
-    usePrivy,
 } from '@privy-io/expo';
 
 export interface IWallet { balance: number, address: string }
 
 const useSolanaTransaction = () => {
-    const { } = usePrivy();
     const { wallets } = useEmbeddedSolanaWallet()
     const [selectedWallet, setSelectedWallet] = useState<IWallet>();
     const [localWallets, setLocalWallets] = useState<IWallet[]>([]);
@@ -96,7 +94,8 @@ const useSolanaTransaction = () => {
         selectedWallet,
         withdraw,
         getWithdrawFeeCalculator,
-        validateSolanaAddress
+        validateSolanaAddress,
+        fromLamports
     }
 }
 

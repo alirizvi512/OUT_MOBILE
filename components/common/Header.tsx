@@ -3,11 +3,7 @@ import { View, TextInput, Image, StyleSheet, TouchableOpacity, Text } from 'reac
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
-interface HeaderProps {
-    from: string
-}
-
-export default function Header({ from }: HeaderProps) {
+export default function Header() {
     return (
         <View style={styles.container}>
             {/* Search Bar */}
@@ -19,33 +15,18 @@ export default function Header({ from }: HeaderProps) {
                     style={styles.searchInput}
                 />
             </TouchableOpacity>
-
-            {
-                from === "feed"
-                    ?
-                    <View style={styles.rightIcons}>
-                        <TouchableOpacity style={styles.notificationIcon}>
-                            <Ionicons name="notifications-outline" size={24} color="#fff" />
-                            <View style={styles.notificationBadge} />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={() => router.push("/profile/profile")}>
-                            <Image
-                                source={{ uri: 'https://www.artnews.com/wp-content/uploads/2021/12/unnamed-1.png' }} // Replace with actual image URL
-                                style={styles.profileImage}
-                            />
-                        </TouchableOpacity>
-                    </View>
-                    :
-                    from === "wallet"
-                        ?
-                        <TouchableOpacity style={styles.addWalletBtn}>
-                            <Text style={styles.addWalletBtnText}>+</Text>
-                        </TouchableOpacity>
-                        :
-                        <></>
-            }
-
-
+            <View style={styles.rightIcons}>
+                <TouchableOpacity style={styles.notificationIcon}>
+                    <Ionicons name="notifications-outline" size={24} color="#fff" />
+                    <View style={styles.notificationBadge} />
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => router.push("/profile/profile")}>
+                    <Image
+                        source={{ uri: 'https://www.artnews.com/wp-content/uploads/2021/12/unnamed-1.png' }} // Replace with actual image URL
+                        style={styles.profileImage}
+                    />
+                </TouchableOpacity>
+            </View>
         </View>
     );
 }

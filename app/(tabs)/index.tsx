@@ -36,7 +36,7 @@ export default function IndexScreen() {
     <>
       <StatusBar barStyle="light-content" backgroundColor="#171717" />
       <SafeAreaView style={styles.safeArea}>
-        <Header from='feed' />
+        <Header />
         <FlatList
           data={data}
           keyExtractor={(item) => item.id.toString()}

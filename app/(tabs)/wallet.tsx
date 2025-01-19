@@ -1,5 +1,5 @@
 
-import Header from "@/components/common/Header";
+import WalletHeader from "@/components/wallet/WalletHeader";
 import WalletWrapper from "@/components/wallet/Wrapper";
 import React from "react";
 import { SafeAreaView, StatusBar, StyleSheet } from "react-native";
@@ -9,7 +9,7 @@ export default function WalletScreen() {
         <>
             <StatusBar barStyle="light-content" backgroundColor="#171717" />
             <SafeAreaView style={styles.safeArea}>
-                <Header from="wallet" />
+                <WalletHeader from="index" />
                 <WalletWrapper />
             </SafeAreaView>
         </>

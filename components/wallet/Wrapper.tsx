@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -15,10 +15,32 @@ import { router } from 'expo-router';
 import SinglePortfolio from './SinglePotfolio';
 import EmptyWalletContainer from './EmptyWalletContainer';
 import SingleHistory from './SingleHistory';
+import { getGCCHoldings } from '@/services/getGCCHoldings';
+import { getGCCActivity } from '@/services/getGCCActivity';
+import { IGCCHoldings } from '@/types/IGCCHoldings';
+import { IGCCActivity } from '@/types/IGCCActivity';
 
 export default function WalletWrapper() {
+    const [portfolios, setPortfolios] = useState<IGCCHoldings[]>([]);
+    const [activities, setActivities] = useState<IGCCActivity[]>([]);
 
     const { localWallets, selectedWallet } = useSolanaTransaction();
+
+    useEffect(() => {
+        if (selectedWallet) {
+            load();
+        }
+    }, [selectedWallet]);
+
+    const load = async () => {
+        if (selectedWallet) {
+            const portfoliosResponse = await getGCCHoldings(0, selectedWallet.address);
+            setPortfolios(portfoliosResponse);
+            const activitiesResponse = await getGCCActivity(0, selectedWallet.address);
+            setActivities(activitiesResponse);
+        }
+    }
+
     const copyToClipboard = async () => {
         await Clipboard.setStringAsync(selectedWallet?.address || "");
         alert('Copied to clipboard!');
@@ -161,9 +183,20 @@ export default function WalletWrapper() {
                     </Text>
                 </TouchableOpacity>
             </View>
-            <SinglePortfolio />
-            <SinglePortfolio />
-            <SinglePortfolio />
+            {
+                portfolios.slice(0, 3).map((portfolio, index) => {
+                    return (
+                        <SinglePortfolio portfolio={portfolio} key={index} />
+                    )
+                })
+            }
+            {
+                portfolios.length === 0
+                    ?
+                    <EmptyWalletContainer />
+                    :
+                    <></>
+            }
 
             <View style={styles.divider} />
 
@@ -175,10 +208,20 @@ export default function WalletWrapper() {
                     </Text>
                 </TouchableOpacity>
             </View>
-            <SingleHistory success={true} />
-            <SingleHistory success={false} />
-            <SingleHistory success={true} />
-            {/* <EmptyWalletContainer /> */}
+            {
+                activities.slice(0, 3).map((activity, index) => {
+                    return (
+                        <SingleHistory activity={activity} key={index} />
+                    )
+                })
+            }
+            {
+                activities.length === 0
+                    ?
+                    <EmptyWalletContainer />
+                    :
+                    <></>
+            }
         </ScrollView >
     );
 }
