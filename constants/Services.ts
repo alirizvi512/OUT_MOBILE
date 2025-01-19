@@ -1,1 +1,1 @@
-export const BASE_URL = "https://p20pfybv3g.execute-api.eu-north-1.amazonaws.com/api"
+export const BASE_URL = process.env.EXPO_PUBLIC_BASE_URL;
