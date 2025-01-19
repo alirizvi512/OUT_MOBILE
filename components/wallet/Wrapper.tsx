@@ -88,7 +88,7 @@ export default function WalletWrapper() {
 
 
             <View style={styles.actionsRow}>
-                <TouchableOpacity style={styles.actionItem} onPress={() => { router.push("/wallet/deposit" as any) }}>
+                <TouchableOpacity style={styles.actionItem} onPress={() => { router.push("/wallet/deposit") }}>
                     <LinearGradient
                         colors={['#22C1C3', '#6EF195']}
                         start={{ x: 0, y: 0 }}
@@ -103,7 +103,7 @@ export default function WalletWrapper() {
                     </LinearGradient>
                     <Text style={styles.actionLabel}>Deposit</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.actionItem} onPress={() => { router.push("/wallet/withdraw" as any) }}>
+                <TouchableOpacity style={styles.actionItem} onPress={() => { router.push("/wallet/withdraw") }}>
                     <LinearGradient
                         colors={['#F40752', '#F65770', '#F9AB8F']}
                         start={{ x: 0, y: 0 }}
@@ -155,7 +155,7 @@ export default function WalletWrapper() {
             {/* --- Portfolio Section --- */}
             <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>Portfolio</Text>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => { router.push("/wallet/portfolio") }}>
                     <Text style={styles.showAll}>
                         Show all
                     </Text>
@@ -169,7 +169,7 @@ export default function WalletWrapper() {
 
             <View style={styles.sectionHeader}>
                 <Text style={styles.sectionTitle}>History</Text>
-                <TouchableOpacity>
+                <TouchableOpacity onPress={() => { router.push("/wallet/activity") }}>
                     <Text style={styles.showAll}>
                         Show all
                     </Text>
