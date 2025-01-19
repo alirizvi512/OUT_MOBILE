@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     View,
     Text,
@@ -12,10 +12,32 @@ import {
 import { router } from 'expo-router';
 import useSolanaTransaction from '@/callbacks/useSolanaTransaction';
 import { Ionicons } from '@expo/vector-icons';
+import { LAMPORTS_PER_SOL } from '@solana/web3.js';
+import BigNumber from "bignumber.js";
 
 export default function WithdrawScreen() {
+    const { selectedWallet, withdraw, getWithdrawFeeCalculator, validateSolanaAddress } = useSolanaTransaction();
+
     const [displayAmount, setDisplayAmount] = useState("");
-    const { selectedWallet } = useSolanaTransaction();
+    const [estimatedFee, setEstimatedFee] = useState<number>(0);
+    const [validAddress, setValidAddress] = useState<boolean>(false);
+    const [submittedAddress, setSubmittedAddress] = useState<string>("");
+
+    useEffect(() => {
+        if (selectedWallet) {
+            calculateGasFee()
+        }
+    }, [selectedWallet])
+
+    useEffect(() => {
+        if (submittedAddress && submittedAddress.length > 0) {
+            const init = async () => {
+                const validity = await validateSolanaAddress(submittedAddress);
+                setValidAddress(validity);
+            }
+            init();
+        }
+    }, [submittedAddress])
 
     const addInput = (value: string) => {
         let localDisplayAmount = displayAmount
@@ -63,6 +85,34 @@ export default function WithdrawScreen() {
         });
     };
 
+    const calculateGasFee = async () => {
+        if (selectedWallet && selectedWallet.address) {
+            const transaction = await withdraw(
+                selectedWallet.address.toString(),
+                LAMPORTS_PER_SOL
+            );
+            if (transaction) {
+                const fee = await getWithdrawFeeCalculator(transaction, selectedWallet.address.toString());
+                setEstimatedFee(fee);
+            }
+        }
+    }
+
+    const selectMaxAmount = async () => {
+        if (selectedWallet) {
+            const balanceBN = new BigNumber(selectedWallet.balance);
+            const estimatedFeeBN = new BigNumber(estimatedFee);
+            const displayAmountBN = balanceBN.minus(estimatedFeeBN);
+            setDisplayAmount(displayAmountBN.toString());
+        }
+    }
+
+    const isDisable =
+        !Number(displayAmount) ||
+        selectedWallet && selectedWallet.balance <= 0 ||
+        selectedWallet && selectedWallet.balance < +displayAmount ||
+        validAddress === false;
+
     return (
         <SafeAreaView style={styles.container}>
             <ScrollView>
@@ -94,7 +144,7 @@ export default function WithdrawScreen() {
                         </View>
                     </View>
                     <View style={{ ...styles.textWrapper, alignItems: 'flex-end' }}>
-                        <TouchableOpacity>
+                        <TouchableOpacity onPress={selectMaxAmount}>
                             <Text style={styles.maxBtnText}>Max</Text>
                         </TouchableOpacity>
                     </View>
@@ -119,8 +169,7 @@ export default function WithdrawScreen() {
                         style={styles.addressInputField}
                         placeholder="Paste your address"
                         placeholderTextColor="#7b7b7b"
-                    // value={email}
-                    // onChangeText={(text) => setEmail(text)}
+                        onChangeText={(text) => setSubmittedAddress(text)}
                     />
                     <Text style={styles.addressInfoLabel}>
                         Only Solana (SOL) Address
@@ -173,8 +222,11 @@ export default function WithdrawScreen() {
                     </View>
                 </View>
                 <View style={styles.confirmButtonContainer}>
-                    <TouchableOpacity style={styles.confirmButton}>
-                        <Text style={styles.confirmButtonText}>Confirm</Text>
+                    <TouchableOpacity disabled={isDisable} style={[
+                        styles.confirmButton,
+                        !isDisable && styles.confirmButtonEnable, // Only added if isDisabled === true
+                    ]}>
+                        <Text style={[styles.confirmButtonText, !isDisable && styles.confirmButtonTextEnable]}>Confirm</Text>
                     </TouchableOpacity>
                 </View>
             </ScrollView>
@@ -192,6 +244,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#373737',
         borderRadius: 100
     },
+    confirmButtonEnable: {
+        backgroundColor: '#fff',
+    },
     confirmButtonText: {
         color: '#7B7B7B',
         textAlign: 'center',
@@ -200,6 +255,9 @@ const styles = StyleSheet.create({
         fontStyle: 'normal',
         fontWeight: 700,
         lineHeight: 22,
+    },
+    confirmButtonTextEnable: {
+        color: '#000'
     },
     confirmButtonContainer: {
         paddingHorizontal: 24,

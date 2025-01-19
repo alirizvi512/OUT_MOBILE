@@ -2,7 +2,10 @@ import { SOLANA_RPC_URL } from "@/constants/Privy";
 import { useCallback, useEffect, useState } from "react";
 import {
     Connection,
+    LAMPORTS_PER_SOL,
     PublicKey,
+    SystemProgram,
+    Transaction,
 } from "@solana/web3.js";
 import {
     useEmbeddedSolanaWallet,
@@ -48,10 +51,52 @@ const useSolanaTransaction = () => {
         }
     }, [connection]);
 
+    const withdraw = useCallback(async (receiverAddress: string, amount: number) => {
+        if (!selectedWallet) return;
+        const receiver = new PublicKey(receiverAddress);
+
+        const transaction = new Transaction().add(
+            SystemProgram.transfer({
+                fromPubkey: new PublicKey(selectedWallet.address),
+                toPubkey: receiver,
+                lamports: amount,
+            })
+        );
+
+        return transaction;
+    }, [connection, selectedWallet])
+
+    const getWithdrawFeeCalculator = useCallback(
+        async (transaction: Transaction, address: string) => {
+            const walletAddress = new PublicKey(address);
+            const { blockhash } = await connection.getLatestBlockhash();
+            transaction.recentBlockhash = blockhash;
+            transaction.feePayer = walletAddress
+            const fee = await transaction.getEstimatedFee(connection);
+            return fromLamports(BigInt(fee || 0));
+        }, [connection]
+    );
+
+    const validateSolanaAddress = (address: string): boolean => {
+        try {
+            new PublicKey(address);
+            return true;
+        } catch (error) {
+            return false;
+        }
+    };
+
+    const fromLamports = (amount: bigint) => {
+        return Number(amount) / Number(LAMPORTS_PER_SOL);
+    };
+
     return {
         getSolBalance,
         localWallets,
-        selectedWallet
+        selectedWallet,
+        withdraw,
+        getWithdrawFeeCalculator,
+        validateSolanaAddress
     }
 }
 
