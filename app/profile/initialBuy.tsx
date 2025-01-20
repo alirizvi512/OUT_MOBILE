@@ -193,7 +193,7 @@ const styles = StyleSheet.create({
     buyButtonContainer: {
         display: 'flex',
         flexDirection: 'row',
-        paddingVertical: 30,
+        paddingVertical: 16,
         paddingHorizontal: 24
     },
     additionalDetailsLabel: {
