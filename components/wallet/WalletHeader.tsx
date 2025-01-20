@@ -27,7 +27,7 @@ export default function WalletHeader({ from }: WalletHeaderProps) {
                     :
                     <></>
             }
-            <TouchableOpacity style={styles.searchContainer}>
+            <TouchableOpacity style={styles.searchContainer} onPress={() => { router.push("/wallet/search") }}>
                 <Ionicons name="search" size={20} color="#888" />
                 <TextInput
                     placeholder="Search"

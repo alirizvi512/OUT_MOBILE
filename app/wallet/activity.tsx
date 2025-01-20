@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { SafeAreaView, FlatList, StyleSheet, ActivityIndicator, View, StatusBar } from "react-native";
+import { SafeAreaView, FlatList, StyleSheet, ActivityIndicator, View, StatusBar, Text } from "react-native";
 import WalletHeader from "@/components/wallet/WalletHeader";
 import useSolanaTransaction from "@/callbacks/useSolanaTransaction";
 import SingleHistory from "@/components/wallet/SingleHistory";
@@ -53,6 +53,11 @@ export default function Activity() {
             <SafeAreaView style={styles.container}>
                 <WalletHeader from="activity" />
                 <FlatList
+                    ListHeaderComponent={
+                        <View style={styles.sectionHeader}>
+                            <Text style={styles.sectionTitle}>History</Text>
+                        </View>
+                    }
                     data={activities}
                     renderItem={renderActivity}
                     keyExtractor={(item, index) =>
@@ -77,5 +82,19 @@ const styles = StyleSheet.create({
     },
     listContent: {
         paddingVertical: 24,
+    },
+    sectionTitle: {
+        color: '#fff',
+        fontSize: 21,
+        fontWeight: 'bold',
+        lineHeight: 29.4,
+    },
+    sectionHeader: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        padding: 24,
+        paddingTop: 0,
     },
 });

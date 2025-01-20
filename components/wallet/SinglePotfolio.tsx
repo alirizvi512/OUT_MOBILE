@@ -1,5 +1,6 @@
 import useSolanaTransaction from "@/callbacks/useSolanaTransaction";
 import { IGCCHoldings } from "@/types/IGCCHoldings";
+import { router } from "expo-router";
 import { View, Image, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 type SinglePortfolioProps = {
@@ -26,7 +27,7 @@ export default function SinglePortfolio({ portfolio }: SinglePortfolioProps) {
                     <Text style={styles.chipsAmount}>{fromLamports(portfolio.tokens)} Chips</Text>
                 </View>
                 <View style={styles.chipsAmountParentDiv}>
-                    <TouchableOpacity style={styles.modalBtn}>
+                    <TouchableOpacity style={styles.modalBtn} onPress={() => { router.push("/profile/initialBuy") }}>
                         <Image
                             source={require('./../../assets/images/arrow-right.png')}
                             resizeMode="contain"

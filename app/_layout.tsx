@@ -76,10 +76,12 @@ export default function RootLayout() {
           <Stack.Screen name="profile/profile" options={{ headerShown: false }} />
           <Stack.Screen name="profile/followers-followings" options={{ headerShown: false }} />
           <Stack.Screen name="profile/points" options={{ headerShown: false }} />
+          <Stack.Screen name="profile/initialBuy" options={{ headerShown: false }} />
           <Stack.Screen name="wallet/deposit" options={{ headerShown: false }} />
           <Stack.Screen name="wallet/withdraw" options={{ headerShown: false }} />
           <Stack.Screen name="wallet/portfolio" options={{ headerShown: false }} />
           <Stack.Screen name="wallet/activity" options={{ headerShown: false }} />
+          <Stack.Screen name="wallet/search" options={{ headerShown: false }} />
           <Stack.Screen name="search" options={{ headerShown: false }} />
         </Stack>
       </PrivyProvider>
