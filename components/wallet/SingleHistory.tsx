@@ -2,20 +2,32 @@ import useSolanaTransaction from "@/callbacks/useSolanaTransaction";
 import { IGCCActivity } from "@/types/IGCCActivity";
 import { View, Image, Text, TouchableOpacity, StyleSheet } from "react-native";
 import moment from "moment";
+import { useState } from "react";
 
 interface SingleHistoryProps {
     activity: IGCCActivity
 }
 
 export default function SingleHistory({ activity }: SingleHistoryProps) {
+    const [error, setError] = useState<boolean>(false);
     const { fromLamports } = useSolanaTransaction();
     return (
         <View style={styles.listingContainer}>
             <View style={styles.listingInnerDiv}>
                 <Image
-                    source={{ uri: activity.subject.profilePic }}
+                    source={
+                        error
+                            ? require('./../../assets/images/default-pfp.png')
+                            : {
+                                uri: activity.subject.profilePic
+                            }
+                    }
                     resizeMode="contain"
                     style={styles.pfpImage}
+                    defaultSource={require('./../../assets/images/default-pfp.png')}
+                    onError={(e) => {
+                        setError(true);
+                    }}
                 />
                 <View style={styles.userInfo}>
                     <Text style={styles.username} numberOfLines={1} ellipsizeMode="middle">{activity.subject.displayName}</Text>

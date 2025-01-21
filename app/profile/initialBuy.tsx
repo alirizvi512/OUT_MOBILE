@@ -1,6 +1,8 @@
-import BottomSheetComponent from "@/components/common/BottomSheetComponent";
+import useSolanaTransaction from "@/callbacks/useSolanaTransaction";
+import { truncateAddress } from "@/utils/generalFunctions";
+import BottomSheet from "@gorhom/bottom-sheet";
 import { router } from "expo-router";
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef, useCallback } from "react";
 import {
     SafeAreaView,
     StatusBar,
@@ -10,21 +12,27 @@ import {
     Image,
     Text,
     TextInput,
-    ScrollView
+    ScrollView,
+    Modal
 } from "react-native";
 
 export default function InitialBuyScreen() {
     const [amount, setAmount] = useState('');
+    const [isBottomSheetVisible, setBottomSheetVisible] = useState(false);
+    const { localWallets, selectedWallet } = useSolanaTransaction();
 
     const handleMaxPress = () => {
         setAmount('100');
+    };
+
+    const handleWalletSelection = (wallet: string) => {
+        setBottomSheetVisible(false); // Close the bottom sheet after selection
     };
 
     return (
         <>
             <StatusBar barStyle="light-content" backgroundColor="#171717" />
             <SafeAreaView style={styles.container}>
-                {/* Scrollable area for all the top content */}
                 <ScrollView
                     style={{ flex: 1 }}
                     contentContainerStyle={{ paddingBottom: 60 }}
@@ -97,26 +105,18 @@ export default function InitialBuyScreen() {
                         </View>
                         <View style={styles.inputDiv}>
                             <Text style={styles.inputLabel}>Wallet</Text>
-                            <View style={styles.maxInputContainer}>
-                                <TextInput
-                                    style={styles.maxInput}
-                                    placeholder="Enter Amount"
-                                    placeholderTextColor="#7B7B7B"
-                                    keyboardType="numeric"
-                                />
-                                <TouchableOpacity onPress={handleMaxPress}>
+                            <TouchableOpacity onPress={() => setBottomSheetVisible(true)} style={styles.maxInputContainer}>
+                                <Text style={styles.maxInput}>
+                                    Pick Wallet
+                                </Text>
+                                <View>
                                     <Image
                                         source={require('./../../assets/images/down-caret.png')}
                                         resizeMode="contain"
                                         style={{ height: 24, width: 24 }}
                                     />
-                                </TouchableOpacity>
-                            </View>
-                            <BottomSheetComponent selectedWallet="" setSelectedWallet={() => { }}>
-                                <View>
-                                    <Text>This is custom content passed as children!</Text>
                                 </View>
-                            </BottomSheetComponent>
+                            </TouchableOpacity>
                         </View>
                     </View>
 
@@ -155,12 +155,130 @@ export default function InitialBuyScreen() {
                         <Text style={styles.buyButtonText}>BUY</Text>
                     </TouchableOpacity>
                 </View>
+
+                <Modal
+                    visible={isBottomSheetVisible}
+                    transparent
+                    animationType="slide"
+                >
+                    <TouchableOpacity
+                        style={styles.overlay}
+                        onPress={() => setBottomSheetVisible(false)}
+                    />
+                    <View style={styles.bottomSheetContainer}>
+                        <Text style={styles.bottomSheetWalletLabel}>
+                            Wallet
+                        </Text>
+                        {
+                            localWallets.map((wallet, index) => {
+                                return (
+                                    <>
+                                        <TouchableOpacity
+                                            key={index}
+                                            onPress={() => handleWalletSelection(wallet.address)}
+                                            style={[styles.optionRow, styles.selected, { justifyContent: 'space-between', alignItems: 'center' }]}>
+                                            <View style={styles.optionRow}>
+                                                <Image
+                                                    source={require('./../../assets/images/privy.png')}
+                                                    resizeMode="contain"
+                                                    style={{ height: 30, width: 24 }}
+                                                />
+                                                <View style={styles.addressRow}>
+                                                    <View style={styles.balanceRow}>
+                                                        <Image
+                                                            source={require('./../../assets/images/white-solana.png')}
+                                                            resizeMode="contain"
+                                                            style={{ height: 20, width: 20 }}
+                                                        />
+                                                        <Text style={styles.balance}>{wallet.balance.toFixed(2)}</Text>
+                                                    </View>
+                                                    <Text style={styles.address}>{truncateAddress(wallet.address)}</Text>
+                                                </View>
+                                            </View>
+                                            <Image
+                                                source={require('./../../assets/images/green-tick.png')}
+                                                resizeMode="contain"
+                                                style={{ height: 10, width: 15 }}
+                                            />
+                                        </TouchableOpacity>
+                                    </>
+
+                                )
+                            })
+                        }
+                    </View>
+                </Modal>
             </SafeAreaView>
         </>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
+    selected: {
+        backgroundColor: '#4A4A4A',
+        padding: 12,
+        borderRadius: 9,
+    },
+    address: {
+        color: '#7B7B7B',
+        fontFamily: 'Inter',
+        fontSize: 16,
+        fontStyle: 'normal',
+        fontWeight: '400',
+        lineHeight: 24,
+    },
+    balance: {
+        color: '#FFF',
+        fontFamily: 'Inter',
+        fontSize: 16,
+        fontStyle: 'normal',
+        fontWeight: '700',
+        lineHeight: 22,
+    },
+    balanceRow: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    addressRow: {
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    optionRow: {
+        display: 'flex',
+        flexDirection: 'row',
+        gap: 20,
+        alignItems: 'center',
+    },
+    bottomSheetWalletLabel: {
+        color: '#FFF',
+        fontFamily: 'Inter',
+        fontSize: 21,
+        fontStyle: 'normal',
+        fontWeight: '700',
+        lineHeight: 29.4,
+    },
+    overlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    bottomSheetContainer: {
+        display: 'flex',
+        flexDirection: 'column',
+        backgroundColor: '#171717',
+        gap: 24,
+        padding: 24,
+        paddingBottom: 48,
+        borderTopLeftRadius: 20,
+        borderTopRightRadius: 20,
+    },
+    option: {
+        color: '#FFF',
+        fontSize: 16,
+        paddingVertical: 12,
+        borderBottomWidth: 1,
+        borderBottomColor: '#373737',
+    },
     additionalDetailsNoticeRow: {
         display: 'flex',
         flexDirection: 'row',
@@ -172,7 +290,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Inter',
         fontSize: 16,
         fontStyle: 'normal',
-        fontWeight: 500,
+        fontWeight: '500',
         lineHeight: 22,
     },
     buyButtonText: {
@@ -181,7 +299,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Inter',
         fontSize: 16,
         fontStyle: 'normal',
-        fontWeight: 700,
+        fontWeight: '700',
         lineHeight: 22,
     },
     buyButton: {
@@ -201,7 +319,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Inter',
         fontSize: 16,
         fontStyle: 'normal',
-        fontWeight: 400,
+        fontWeight: '400',
         lineHeight: 24,
     },
     additionalDetailsAmountRow: {
@@ -250,7 +368,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Inter',
         fontSize: 15,
         fontStyle: 'normal',
-        fontWeight: 700,
+        fontWeight: '700',
         lineHeight: 18,
     },
     inputContainer: {
@@ -281,7 +399,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Inter',
         fontSize: 21,
         fontStyle: 'normal',
-        fontWeight: 700,
+        fontWeight: '700',
         lineHeight: 29.4,
     },
     detailsContainer: {
@@ -295,7 +413,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Inter',
         fontSize: 16,
         fontStyle: 'normal',
-        fontWeight: 500,
+        fontWeight: '500',
         lineHeight: 22,
     },
     displayName: {
@@ -303,7 +421,7 @@ const styles = StyleSheet.create({
         fontFamily: 'Inter',
         fontSize: 16,
         fontStyle: 'normal',
-        fontWeight: 700,
+        fontWeight: '700',
         lineHeight: 22,
     },
     pfpImage: {

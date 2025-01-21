@@ -1,6 +1,7 @@
 import useSolanaTransaction from "@/callbacks/useSolanaTransaction";
 import { IGCCHoldings } from "@/types/IGCCHoldings";
 import { router } from "expo-router";
+import { useState } from "react";
 import { View, Image, Text, TouchableOpacity, StyleSheet } from "react-native";
 
 type SinglePortfolioProps = {
@@ -8,14 +9,25 @@ type SinglePortfolioProps = {
 }
 
 export default function SinglePortfolio({ portfolio }: SinglePortfolioProps) {
+    const [error, setError] = useState<boolean>(false);
     const { fromLamports } = useSolanaTransaction();
     return (
         <View style={styles.listingContainer}>
             <View style={styles.listingInnerDiv}>
                 <Image
-                    source={{ uri: portfolio.subject.profilePic }}
+                    source={
+                        error
+                            ? require('./../../assets/images/default-pfp.png')
+                            : {
+                                uri: portfolio.subject.profilePic
+                            }
+                    }
                     resizeMode="contain"
                     style={styles.pfpImage}
+                    defaultSource={require('./../../assets/images/default-pfp.png')}
+                    onError={(e) => {
+                        setError(true);
+                    }}
                 />
                 <View style={styles.userInfo}>
                     <Text style={styles.username} numberOfLines={1} ellipsizeMode="middle">{portfolio.subject.displayName}</Text>

@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import store from '@/redux/store';
 import { PrivyProvider } from '@privy-io/expo';
 import { PRIVY_APP_ID, PRIVY_CLIENT_ID } from "@/constants/Privy";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 
 export default function RootLayout() {
   const [loading, setLoading] = useState<boolean>(true);
@@ -65,25 +66,27 @@ export default function RootLayout() {
         }}
 
       >
-        <Stack>
-          {/* Define the Tabs Layout */}
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="index" options={{ headerShown: false }} />
-          <Stack.Screen name="register" options={{ headerShown: false }} />
-          <Stack.Screen name="activation-code" options={{ headerShown: false }} />
-          <Stack.Screen name="link-twitter" options={{ headerShown: false }} />
-          <Stack.Screen name="referral-code" options={{ headerShown: false }} />
-          <Stack.Screen name="profile/profile" options={{ headerShown: false }} />
-          <Stack.Screen name="profile/followers-followings" options={{ headerShown: false }} />
-          <Stack.Screen name="profile/points" options={{ headerShown: false }} />
-          <Stack.Screen name="profile/initialBuy" options={{ headerShown: false }} />
-          <Stack.Screen name="wallet/deposit" options={{ headerShown: false }} />
-          <Stack.Screen name="wallet/withdraw" options={{ headerShown: false }} />
-          <Stack.Screen name="wallet/portfolio" options={{ headerShown: false }} />
-          <Stack.Screen name="wallet/activity" options={{ headerShown: false }} />
-          <Stack.Screen name="wallet/search" options={{ headerShown: false }} />
-          <Stack.Screen name="search" options={{ headerShown: false }} />
-        </Stack>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+          <Stack>
+            {/* Define the Tabs Layout */}
+            <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+            <Stack.Screen name="index" options={{ headerShown: false }} />
+            <Stack.Screen name="register" options={{ headerShown: false }} />
+            <Stack.Screen name="activation-code" options={{ headerShown: false }} />
+            <Stack.Screen name="link-twitter" options={{ headerShown: false }} />
+            <Stack.Screen name="referral-code" options={{ headerShown: false }} />
+            <Stack.Screen name="profile/profile" options={{ headerShown: false }} />
+            <Stack.Screen name="profile/followers-followings" options={{ headerShown: false }} />
+            <Stack.Screen name="profile/points" options={{ headerShown: false }} />
+            <Stack.Screen name="profile/initialBuy" options={{ headerShown: false }} />
+            <Stack.Screen name="wallet/deposit" options={{ headerShown: false }} />
+            <Stack.Screen name="wallet/withdraw" options={{ headerShown: false }} />
+            <Stack.Screen name="wallet/portfolio" options={{ headerShown: false }} />
+            <Stack.Screen name="wallet/activity" options={{ headerShown: false }} />
+            <Stack.Screen name="wallet/search" options={{ headerShown: false }} />
+            <Stack.Screen name="search" options={{ headerShown: false }} />
+          </Stack>
+        </GestureHandlerRootView>
       </PrivyProvider>
     </Provider>
   );
